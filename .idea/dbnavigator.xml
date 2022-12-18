@@ -29,8 +29,9 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="cb12e1a7-a082-4b53-a483-203bc78daf3c">
-      <console name="Connection" type="STANDARD" schema="javalab" session="Main"><![CDATA[insert into telephonedirectory (`TelephoneNumber`,`name`,`address`) value(1234567897,'xyz','abcds 24 , xy street');
-Select * from telephonedirectory ;]]></console>
+      <console name="Connection" type="STANDARD" schema="javalab" session="Main"><![CDATA[--insert into telephonedirectory (`TelephoneNumber`,`name`,`address`) value(5551333669,'pqr','pq colony , street 78');
+Select * from telephonedirectory ;
+--delete  from telephonedirectory where `TelephoneNumber`='555333669';]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">

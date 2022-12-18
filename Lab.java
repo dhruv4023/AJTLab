@@ -1,32 +1,134 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 
-public class Lab extends Frame implements ActionListener {
-    TextArea ta;
+public class Lab extends Frame {
+    TextArea displaySearchResult;
     TextField searchKey;
     Choice choice = new Choice();
-    Button b;
-
+    CardLayout cl = new CardLayout();
+    Panel mainPanel;
+    DatabaseManagement dbm;
 
     Lab(String title) throws SQLException, ClassNotFoundException {
         super(title);
-        connectDb();
         setVisible(true);
         setSize(500, 500);
-        setLayout(null);
         closeWin();
+        dbm = new DatabaseManagement();
+        mainPanel = new Panel(cl);
+        add(mainPanel);
+        cardBtn();
+        addCardSearch(mainPanel);
+        addCardAdd(mainPanel);
+        addCardDel(mainPanel);
+    }
 
-        addComp(new Label("Select : "), 20, 50, 40, 25);
-        addSelectionList();
+    Label inserted, deleted;
 
-        addComp(new Label("Enter : "), 20, 100, 40, 25);
-        addComp(searchKey = new TextField(), 100, 100, 150, 25);
+    private void addCardDel(Panel mainPanel) {
+        TextField delTelephoneNumber;
+        Panel p = new Panel(null);
+        mainPanel.add(p, "Delete");
+        Button delBtn;
 
-        addComp(b = new Button("OK"), 100, 150, 40, 25);
-        b.addActionListener(this);
-        addComp(ta = new TextArea(), 20, 200, 400, 200);
+        addComp(new Label("Telephone Number : "), 20, 50, 100, 25, p);
+        addComp(delTelephoneNumber = new TextField(), 120, 50, 150, 25, p);
 
+        addComp(delBtn = new Button("Delete"), 80, 100, 40, 25, p);
+        deleted = new Label();
+        delBtn.addActionListener((ActionEvent ae) -> {
+            p.remove(deleted);
+            int dialogBox = JOptionPane.showConfirmDialog(this,
+                    "Sure? You want to Delete?",
+                    "Swing Tester",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if (JOptionPane.YES_OPTION == dialogBox) {
+                try {
+                    int t = dbm.deleteData(Long.parseLong(delTelephoneNumber.getText().trim()));
+                    if (t == 0)
+                        addComp(deleted = new Label("Not Found in Record Successfully !!!"), 20, 250, 400, 200, p);
+                    else addComp(deleted = new Label("Deleted Successfully !!!"), 20, 250, 400, 200, p);
+                } catch (SQLException e) {
+                    addComp(deleted = new Label("Couldn't Delete !!!"), 20, 250, 400, 200, p);
+                    e.printStackTrace();
+                }
+            }
+            delTelephoneNumber.setText("");
+        });
+    }
+
+    private void addCardAdd(Panel mainPanel) {
+        Panel p = new Panel(null);
+        mainPanel.add(p, "Add");
+        Button addBtn;
+        TextField name, telephoneNumber, address;
+
+        addComp(new Label("Telephone Number : "), 20, 50, 100, 25, p);
+        addComp(telephoneNumber = new TextField(), 120, 50, 150, 25, p);
+
+        addComp(new Label("Name : "), 20, 100, 100, 25, p);
+        addComp(name = new TextField(), 120, 100, 150, 25, p);
+
+        addComp(new Label("Address : "), 20, 150, 40, 25, p);
+        addComp(address = new TextField(), 120, 150, 150, 25, p);
+
+        addComp(addBtn = new Button("Save"), 80, 200, 40, 25, p);
+        inserted = new Label();
+        addBtn.addActionListener((ActionEvent ae) -> {
+            p.remove(inserted);
+            try {
+                dbm.insertData(Long.parseLong(telephoneNumber.getText().trim()), name.getText(), address.getText());
+                telephoneNumber.setText("");
+                name.setText("");
+                address.setText("");
+                addComp(inserted = new Label("Inserted Successfully !!!"), 20, 250, 400, 200, p);
+            } catch (SQLException e) {
+                addComp(inserted = new Label("Couldn't Insert !!!"), 20, 250, 400, 200, p);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void cardBtn() {
+        Panel p = new Panel(new GridLayout(1, 3));
+        add("North", p);
+        Button bS, bA, bD;
+        p.add(bS = new Button("Search"));
+        p.add(bA = new Button("Add"));
+        p.add(bD = new Button("Delete"));
+        bS.addActionListener(ActionEvent -> cl.show(mainPanel, "Search"));
+        bD.addActionListener(ActionEvent -> cl.show(mainPanel, "Delete"));
+        bA.addActionListener(actionEvent -> cl.show(mainPanel, "Add"));
+    }
+
+    private void addCardSearch(Panel mP) {
+        Button searchBtn;
+        Panel p = new Panel(null);
+
+        mP.add(p, "Search");
+        addComp(new Label("Select : "), 20, 50, 40, 25, p);
+        addSelectionList(p);
+
+        addComp(new Label("Enter : "), 20, 100, 40, 25, p);
+        addComp(searchKey = new TextField(), 100, 100, 150, 25, p);
+
+        addComp(searchBtn = new Button("OK"), 100, 150, 40, 25, p);
+        addComp(displaySearchResult = new TextArea(), 20, 200, 400, 200, p);
+
+        searchBtn.addActionListener((ActionEvent ae) -> {
+            displaySearchResult.setText("");
+            String result;
+            try {
+                result = dbm.getData(searchKey.getText().trim(), choice.getSelectedItem());
+                displaySearchResult.setText(result);
+                searchKey.setText("");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void closeWin() {
@@ -43,41 +145,16 @@ public class Lab extends Frame implements ActionListener {
         });
     }
 
-    private void addSelectionList() {
-        addComp(choice, 100, 50, 150, 25);
-        choice.add("Telephone Number");
+    private void addSelectionList(Panel p) {
+        addComp(choice, 100, 50, 150, 25, p);
+        choice.add("TelephoneNumber");
         choice.add("Name");
         choice.add("Address");
     }
 
-    Connection conn;
-    Statement stm;
-
-    private void connectDb() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javaLab", "root", "");
-        System.out.println("connected.....");
-        stm = conn.createStatement();
-        // MetaData
-//            DatabaseMetaData databaseMetaData=conn.getMetaData();
-//            System.out.println("----"+databaseMetaData.getConnection());
-//            System.out.println("----"+databaseMetaData.getDatabaseProductName());
-//            System.out.println("----"+databaseMetaData.getDriverName());
-//
-//            ResultSet rs=stm.executeQuery("select * from Product");
-//            rs.next();
-//            ResultSetMetaData resultSetMetaData=rs.getMetaData();
-//
-//            System.out.println("rs----"+resultSetMetaData.getColumnClassName(1));
-//            System.out.println("rs----"+resultSetMetaData.getColumnType(1));
-//            System.out.println("rs----"+resultSetMetaData.getColumnCount());
-//            System.out.println("rs----"+resultSetMetaData.getScale(1));
-    }
-
-
-    private void addComp(Component c, int x, int y, int w, int h) {
+    private void addComp(Component c, int x, int y, int w, int h, Panel p) {
         c.setBounds(x, y, w, h);
-        add(c);
+        p.add(c);
     }
 
     public static void main(String[] args) {
@@ -87,34 +164,4 @@ public class Lab extends Frame implements ActionListener {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void actionPerformed(ActionEvent ae) {
-//        System.out.println(ae.getActionCommand());
-        ta.setText("");
-        if (ae.getActionCommand().equals("OK")) {
-            try {
-                getData(searchKey.getText().trim());
-                searchKey.setText("");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void getData(String s) throws SQLException {
-        String tmp2 = "";
-        if (choice.getSelectedItem().equals("Name"))
-            tmp2 = "select * from telephoneDirectory where name='" + s + "'";
-        else if (choice.getSelectedItem().equals("Address"))
-            tmp2 = "select * from telephoneDirectory where address like '%" + s + "%'";
-        else
-            tmp2 = "select * from telephoneDirectory where TelephoneNumber='" + s + "'";
-        ResultSet rs = stm.executeQuery(tmp2);
-        String tmp = "telephoneNumber\t|\tName\t|\tAddress\n" + "------------------------------------------------------------------------------------\n";
-        while (rs.next())
-            tmp += (rs.getString("telephoneNumber") + "\t|\t" + rs.getString("Name")) + "\t|\t" + rs.getString("Address") + " \n";
-        ta.setText(tmp);
-    }
-
 }
