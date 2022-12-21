@@ -19,9 +19,10 @@ public class DatabaseManagement {
         ResultSet rs = stm.executeQuery(tmp2);
         StringBuilder tmp = new StringBuilder("telephoneNumber\t|\tName\t|\tAddress\n");
         tmp.append("------------------------------------------------------------------------------------\n");
-        while (rs.next()){
+        while (rs.next()) {
             tmp.append(rs.getString("telephoneNumber")).append("\t|\t").append(rs.getString("Name")).append("\t|\t")
-                    .append(rs.getString("Address")).append(" \n");}
+                    .append(rs.getString("Address")).append(" \n");
+        }
         return (tmp.toString());
     }
 
@@ -47,5 +48,16 @@ public class DatabaseManagement {
     public int deleteData(long number) throws SQLException {
         psmtDel.setLong(1, number);
         return psmtDel.executeUpdate();
+    }
+
+    public void closeConn()  {
+        try {
+            conn.close();
+            stm.close();
+            psmtAdd.close();
+            psmtDel.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

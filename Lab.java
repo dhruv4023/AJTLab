@@ -135,11 +135,13 @@ public class Lab extends Frame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                dbm.closeConn();
                 dispose();
             }
-
+            
             @Override
             public void windowClosed(WindowEvent e) {
+                dbm.closeConn();
                 System.exit(0);
             }
         });
