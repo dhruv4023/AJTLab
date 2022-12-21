@@ -42,7 +42,7 @@ public class Lab extends Frame {
             p.remove(deleted);
             int dialogBox = JOptionPane.showConfirmDialog(this,
                     "Sure? You want to Delete?",
-                    "Swing Tester",
+                    "Delete Number",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if (JOptionPane.YES_OPTION == dialogBox) {

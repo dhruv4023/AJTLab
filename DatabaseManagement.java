@@ -1,7 +1,6 @@
 import java.sql.*;
 
-public
-class DatabaseManagement {
+public class DatabaseManagement {
     Connection conn;
     Statement stm;
 
@@ -12,20 +11,6 @@ class DatabaseManagement {
         stm = conn.createStatement();
         insertIntoTelephoneDirectoryStatement();
         deleteFromTelephoneDirectoryStatement();
-        // MetaData
-//            DatabaseMetaData databaseMetaData=conn.getMetaData();
-//            System.out.println("----"+databaseMetaData.getConnection());
-//            System.out.println("----"+databaseMetaData.getDatabaseProductName());
-//            System.out.println("----"+databaseMetaData.getDriverName());
-//
-//            ResultSet rs=stm.executeQuery("select * from Product");
-//            rs.next();
-//            ResultSetMetaData resultSetMetaData=rs.getMetaData();
-//
-//            System.out.println("rs----"+resultSetMetaData.getColumnClassName(1));
-//            System.out.println("rs----"+resultSetMetaData.getColumnType(1));
-//            System.out.println("rs----"+resultSetMetaData.getColumnCount());
-//            System.out.println("rs----"+resultSetMetaData.getScale(1));
     }
 
     String getData(String s, String selectedColumn) throws SQLException {
@@ -34,8 +19,9 @@ class DatabaseManagement {
         ResultSet rs = stm.executeQuery(tmp2);
         StringBuilder tmp = new StringBuilder("telephoneNumber\t|\tName\t|\tAddress\n");
         tmp.append("------------------------------------------------------------------------------------\n");
-        while (rs.next())
-            tmp.append(rs.getString("telephoneNumber")).append("\t|\t").append(rs.getString("Name")).append("\t|\t").append(rs.getString("Address")).append(" \n");
+        while (rs.next()){
+            tmp.append(rs.getString("telephoneNumber")).append("\t|\t").append(rs.getString("Name")).append("\t|\t")
+                    .append(rs.getString("Address")).append(" \n");}
         return (tmp.toString());
     }
 
@@ -53,7 +39,7 @@ class DatabaseManagement {
         psmtAdd.executeUpdate();
     }
 
-    public void deleteFromTelephoneDirectoryStatement() throws SQLException {
+    private void deleteFromTelephoneDirectoryStatement() throws SQLException {
         String query = "delete from telephoneDirectory where `TelephoneNumber`  like ?";
         psmtDel = conn.prepareStatement(query);
     }
