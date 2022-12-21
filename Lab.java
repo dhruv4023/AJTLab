@@ -57,7 +57,14 @@ public class Lab extends Frame implements ActionListener {
         Class.forName("com.mysql.cj.jdbc.Driver");
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javaLab", "root", "");
         System.out.println("connected.....");
-        stm = conn.createStatement();
+        // stm = conn.createStatement();
+
+        //DataBAse MetaData
+        DatabaseMetaData dbm= conn.getMetaData();
+        System.out.println(dbm.getDatabaseProductName());
+        System.out.println(dbm.getConnection());
+        System.out.println(dbm.getMaxColumnsInIndex());
+        System.out.println(dbm.getDriverName());
         // MetaData
 //            DatabaseMetaData databaseMetaData=conn.getMetaData();
 //            System.out.println("----"+databaseMetaData.getConnection());
