@@ -57,7 +57,7 @@ public class DatabaseManagement {
             psmtAdd.close();
             psmtDel.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 }

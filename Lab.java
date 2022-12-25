@@ -53,7 +53,7 @@ public class Lab extends Frame {
                     else addComp(deleted = new Label("Deleted Successfully !!!"), 20, 250, 400, 200, p);
                 } catch (SQLException e) {
                     addComp(deleted = new Label("Couldn't Delete !!!"), 20, 250, 400, 200, p);
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
             delTelephoneNumber.setText("");
@@ -87,7 +87,6 @@ public class Lab extends Frame {
                 addComp(inserted = new Label("Inserted Successfully !!!"), 20, 250, 400, 200, p);
             } catch (SQLException e) {
                 addComp(inserted = new Label("Couldn't Insert !!!"), 20, 250, 400, 200, p);
-                e.printStackTrace();
             }
         });
     }
@@ -126,7 +125,7 @@ public class Lab extends Frame {
                 displaySearchResult.setText(result);
                 searchKey.setText("");
             } catch (SQLException e) {
-                e.printStackTrace();
+                searchKey.setText("DB not connected");
             }
         });
     }
@@ -135,14 +134,14 @@ public class Lab extends Frame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                dbm.closeConn();
                 dispose();
+                if (dbm != null) dbm.closeConn();
             }
-            
+
             @Override
             public void windowClosed(WindowEvent e) {
-                dbm.closeConn();
                 System.exit(0);
+                if (dbm != null) dbm.closeConn();
             }
         });
     }
@@ -163,7 +162,8 @@ public class Lab extends Frame {
         try {
             new Lab("Telephone directory");
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            System.out.println("DB not connected...");
         }
     }
 }
