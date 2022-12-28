@@ -8,7 +8,6 @@ public class Lab extends Frame implements ActionListener {
     Choice choice = new Choice();
     Button b;
 
-
     Lab(String title) throws SQLException, ClassNotFoundException {
         super(title);
         connectDb();
@@ -50,37 +49,42 @@ public class Lab extends Frame implements ActionListener {
         choice.add("Address");
     }
 
-    Connection conn;
-    Statement stm;
+    Connection conn = null;
+    Statement stm = null;
 
-    private void connectDb() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javaLab", "root", "");
-        System.out.println("connected.....");
+    private void connectDb() throws SQLException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/javaLab", "root", "");
+            conn.setAutoCommit(false);
+            System.out.println("connected.....");
+        } catch (SQLException | ClassNotFoundException e) {
+            conn.rollback();
+            e.printStackTrace();
+        }
         // stm = conn.createStatement();
 
-        //DataBAse MetaData
-        DatabaseMetaData dbm= conn.getMetaData();
-        System.out.println(dbm.getDatabaseProductName());
-        System.out.println(dbm.getConnection());
-        System.out.println(dbm.getMaxColumnsInIndex());
-        System.out.println(dbm.getDriverName());
+        // DataBAse MetaData
+        // DatabaseMetaData dbm= conn.getMetaData();
+        // System.out.println(dbm.getDatabaseProductName());
+        // System.out.println(dbm.getConnection());
+        // System.out.println(dbm.getMaxColumnsInIndex());
+        // System.out.println(dbm.getDriverName());
         // MetaData
-//            DatabaseMetaData databaseMetaData=conn.getMetaData();
-//            System.out.println("----"+databaseMetaData.getConnection());
-//            System.out.println("----"+databaseMetaData.getDatabaseProductName());
-//            System.out.println("----"+databaseMetaData.getDriverName());
-//
-//            ResultSet rs=stm.executeQuery("select * from Product");
-//            rs.next();
-//            ResultSetMetaData resultSetMetaData=rs.getMetaData();
-//
-//            System.out.println("rs----"+resultSetMetaData.getColumnClassName(1));
-//            System.out.println("rs----"+resultSetMetaData.getColumnType(1));
-//            System.out.println("rs----"+resultSetMetaData.getColumnCount());
-//            System.out.println("rs----"+resultSetMetaData.getScale(1));
+        // DatabaseMetaData databaseMetaData=conn.getMetaData();
+        // System.out.println("----"+databaseMetaData.getConnection());
+        // System.out.println("----"+databaseMetaData.getDatabaseProductName());
+        // System.out.println("----"+databaseMetaData.getDriverName());
+        //
+        // ResultSet rs=stm.executeQuery("select * from Product");
+        // rs.next();
+        // ResultSetMetaData resultSetMetaData=rs.getMetaData();
+        //
+        // System.out.println("rs----"+resultSetMetaData.getColumnClassName(1));
+        // System.out.println("rs----"+resultSetMetaData.getColumnType(1));
+        // System.out.println("rs----"+resultSetMetaData.getColumnCount());
+        // System.out.println("rs----"+resultSetMetaData.getScale(1));
     }
-
 
     private void addComp(Component c, int x, int y, int w, int h) {
         c.setBounds(x, y, w, h);
@@ -97,7 +101,7 @@ public class Lab extends Frame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-//        System.out.println(ae.getActionCommand());
+        // System.out.println(ae.getActionCommand());
         ta.setText("");
         if (ae.getActionCommand().equals("OK")) {
             try {
@@ -118,9 +122,11 @@ public class Lab extends Frame implements ActionListener {
         else
             tmp2 = "select * from telephoneDirectory where TelephoneNumber='" + s + "'";
         ResultSet rs = stm.executeQuery(tmp2);
-        String tmp = "telephoneNumber\t|\tName\t|\tAddress\n" + "------------------------------------------------------------------------------------\n";
+        String tmp = "telephoneNumber\t|\tName\t|\tAddress\n"
+                + "------------------------------------------------------------------------------------\n";
         while (rs.next())
-            tmp += (rs.getString("telephoneNumber") + "\t|\t" + rs.getString("Name")) + "\t|\t" + rs.getString("Address") + " \n";
+            tmp += (rs.getString("telephoneNumber") + "\t|\t" + rs.getString("Name")) + "\t|\t"
+                    + rs.getString("Address") + " \n";
         ta.setText(tmp);
     }
 
