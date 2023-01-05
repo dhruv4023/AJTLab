@@ -93,7 +93,7 @@ public class Lab extends Frame implements ActionListener {
 
     public static void main(String[] args) {
         try {
-            new Lab("Telephone directory");
+            // new Lab("Telephone directory");
         } catch (Exception e) {
             e.printStackTrace();
         }
